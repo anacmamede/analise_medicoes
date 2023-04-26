@@ -115,7 +115,8 @@ if __name__ == '__main__':
     
     if selected=='Gráficos':
         st.markdown('## Gráficos 24h')
-        dia = st.number_input('Escolha o dia', value=df_final['dia'][0])
+        # dia = st.number_input('Escolha o dia', value=df_final['dia'][0])
+        dia = st.selectbox('Escolha o dia:', df_final['dia'].unique())
 
         # Carregamento
         fig_c = grafico_carregamento(df_final,dia)
