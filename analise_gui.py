@@ -1,8 +1,6 @@
 import os
 import pandas as pd
-# import numpy as np
 import plotly.express as px
-# from datetime import datetime 
 import streamlit as st
 from streamlit_option_menu import option_menu
 
@@ -110,6 +108,7 @@ if __name__ == '__main__':
         st.dataframe(resumo, width=400)      
 
         st.markdown('## Dados:')
+        st.markdown('Clique no nome coluna para ordenar')
         st.dataframe(df_final.style.highlight_min(color = 'yellow', subset=['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]',
        'S_max [kVA]', 'Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]','S_min [kVA]', 'Carregamento']).highlight_max(color = 'red', subset=['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]',
        'S_max [kVA]', 'Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]','S_min [kVA]', 'Carregamento']),height=500)
