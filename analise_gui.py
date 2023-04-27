@@ -81,7 +81,7 @@ def grafico_tensao_max(df_final,dia):
     fig.update_layout(title='<b>Tensão máxima no dia {} - {}<b>'.format(dia,trafo),xaxis_title='Hora do dia', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20)) 
     fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
                         font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
-                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h")) #,x=0,y=0.1,orientation="h"
     return fig
 
 def grafico_tensao_max_completo(df_final):
@@ -94,7 +94,7 @@ def grafico_tensao_max_completo(df_final):
     fig.update_layout(title='<b>Tensão máxima - {}<b>'.format(trafo),xaxis_title='Dia_hora', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20)) 
     fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
                         font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
-                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h"))
     return fig
 
 def grafico_tensao_min(df_final,dia):
@@ -104,7 +104,7 @@ def grafico_tensao_min(df_final,dia):
     fig.update_layout(title='<b>Tensão mínima no dia {} - {}<b>'.format(dia,trafo),xaxis_title='Hora do dia', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20))    
     fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
                         font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
-                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h"))
 
     return fig
 
@@ -118,7 +118,7 @@ def grafico_tensao_min_completo(df_final):
     fig.update_layout(title='<b>Tensão mínima - {}<b>'.format(trafo),xaxis_title='Dia_hora', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20))    
     fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
                         font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
-                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h"))
     return fig
 
 
