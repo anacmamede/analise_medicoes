@@ -59,7 +59,19 @@ def grafico_carregamento(df_final,dia):
     fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
                         font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
                         xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
+    return fig
 
+def grafico_carregamento_completo(df_final):
+    aux2 = df_final.copy()
+    aux2['dia'] = aux2['dia'].apply(lambda x: str(x))
+    aux2['hora'] = aux2['hora'].apply(lambda x: str(x))
+    aux2['dia_hora'] = aux2['dia'] + '_' + aux2['hora']+'h'
+    fig = px.line(aux2,x='dia_hora', y=['Carregamento'])
+    fig.update_xaxes(dtick=d_tick,showgrid=True)
+    fig.update_layout(title='<b>Carregamento - Trafo {}<b>'.format(trafo),xaxis_title='Dia_hora', yaxis_title='Carregamento [pu]',showlegend=False,font=dict(size=20))
+    fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
+                        font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
     return fig
 
 def grafico_tensao_max(df_final,dia):
@@ -67,6 +79,19 @@ def grafico_tensao_max(df_final,dia):
     fig = px.line(aux,x='hora', y=['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]'])
     fig.update_xaxes(dtick=d_tick,showgrid=True)
     fig.update_layout(title='<b>Tensão máxima no dia {} - Trafo {}<b>'.format(dia,trafo),xaxis_title='Hora do dia', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20)) 
+    fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
+                        font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
+    return fig
+
+def grafico_tensao_max_completo(df_final):
+    aux2 = df_final.copy()
+    aux2['dia'] = aux2['dia'].apply(lambda x: str(x))
+    aux2['hora'] = aux2['hora'].apply(lambda x: str(x))
+    aux2['dia_hora'] = aux2['dia'] + '_' + aux2['hora']+'h'
+    fig = px.line(aux2,x='dia_hora', y=['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]'])
+    fig.update_xaxes(dtick=d_tick,showgrid=True)
+    fig.update_layout(title='<b>Tensão máxima - Trafo {}<b>'.format(trafo),xaxis_title='Dia_hora', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20)) 
     fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
                         font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
                         xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
@@ -82,6 +107,20 @@ def grafico_tensao_min(df_final,dia):
                         xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
 
     return fig
+
+def grafico_tensao_min_completo(df_final):
+    aux2 = df_final.copy()
+    aux2['dia'] = aux2['dia'].apply(lambda x: str(x))
+    aux2['hora'] = aux2['hora'].apply(lambda x: str(x))
+    aux2['dia_hora'] = aux2['dia'] + '_' + aux2['hora']+'h'
+    fig = px.line(aux2,x='dia_hora', y=['Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]'])
+    fig.update_xaxes(dtick=d_tick,showgrid=True)
+    fig.update_layout(title='<b>Tensão mínima - Trafo {}<b>'.format(trafo),xaxis_title='Dia_hora', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20))    
+    fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
+                        font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size)))
+    return fig
+
 
 
 if __name__ == '__main__':
@@ -127,4 +166,13 @@ if __name__ == '__main__':
         st.plotly_chart(fig_v1, use_container_width=True)
         fig_v2 = grafico_tensao_min(df_final,dia)
         st.plotly_chart(fig_v2, use_container_width=True)
+
+        completo = st.checkbox('Visualizar gráficos completos')
+        if completo:
+            fig_s = grafico_carregamento_completo(df_final)
+            st.plotly_chart(fig_s, use_container_width=True)
+            fig_v1 = grafico_tensao_max_completo(df_final)
+            st.plotly_chart(fig_v1, use_container_width=True)
+            fig_v2 = grafico_tensao_min_completo(df_final)
+            st.plotly_chart(fig_v2, use_container_width=True)
 
