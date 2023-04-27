@@ -154,8 +154,8 @@ if __name__ == '__main__':
         c1.dataframe(resumo, width=350)      
         c2.markdown('### Geração Distribuída')  
         res_gd = df_gd.loc[df_gd['cod_trafo'].isin(['5700047122', '5700154122', '5700182122', '5703368122', '5703992122',
-                                                    '5704615122', '5707288122'])].reset_index()
-        c2.dataframe(res_gd, width=600)    
+                                                    '5704615122', '5707288122'])].sort_values('POT_INST_GD',ascending=False).reset_index()
+        c2.dataframe(res_gd.style.background_gradient(subset = ['POT_INST_GD'],vmin=60, vmax=220,cmap='YlOrRd'), width=600)    
 
         st.markdown('## Dados:')
         st.markdown('Clique no nome coluna para ordenar')
