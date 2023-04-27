@@ -20,7 +20,7 @@ def file_selector(folder_path):
         filenames = list()
         i = 0
         while i < len(all_files):
-            if "csv" in (all_files[i]):
+            if "TRANSFORMADOR" in (all_files[i]):
                 filenames.append(all_files[i])
             i += 1
 
@@ -128,6 +128,11 @@ if __name__ == '__main__':
     file,selected_filename = file_selector(folder_path)
     trafo = selected_filename.replace('.csv','')
 
+    df_gd = pd.read_csv(os.path.join(folder_path, 'mini-micro-bt.csv'))
+    df_gd['cod_trafo'] = df_gd['cod_trafo'].apply(lambda x: str(x))
+    df_gd['id_trafo'] = df_gd['id_trafo'].apply(lambda x: str(x))
+    df_gd['Snom'] = df_gd['Snom'].str.replace(',','.').astype(float)
+
     st.sidebar.markdown('### Valores Base:')
     Sn = st.sidebar.number_input('S (kVA)',value=150.0,step=0.5)
     Vbase = st.sidebar.number_input('Tensão F-N (V)',value=220)
@@ -142,9 +147,15 @@ if __name__ == '__main__':
 
 
     if selected=='Visualização dos dados':
-        st.markdown('## Resumo:')  
-        resumo = df[['Van [V]', 'Vbn [V]', 'Vcn [V]','S [VA]','Registro']].agg([min, max]).T      
-        st.dataframe(resumo, width=400)      
+        st.markdown('## Resumo')  
+        c1, c2 = st.columns([1,1])
+        resumo = df[['Van [V]', 'Vbn [V]', 'Vcn [V]','S [VA]','Registro']].agg([min, max]).T  
+        c1.markdown('### Medições')      
+        c1.dataframe(resumo, width=350)      
+        c2.markdown('### Geração Distribuída')  
+        res_gd = df_gd.loc[df_gd['cod_trafo'].isin(['5700047122', '5700154122', '5700182122', '5703368122', '5703992122',
+                                                    '5704615122', '5707288122'])].reset_index()
+        c2.dataframe(res_gd, width=600)    
 
         st.markdown('## Dados:')
         st.markdown('Clique no nome coluna para ordenar')
