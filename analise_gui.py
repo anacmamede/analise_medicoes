@@ -42,11 +42,16 @@ def data_preparation(df, Vbase, Sn):
     df_max[['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]']] = df_max[['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]']]/Vbase
     df_max['S_max [kVA]'] = df_max['S_max [kVA]']/1000
 
+    df_avg = df[['V avg [V]','S [VA]','dia','hora']].groupby(['dia','hora']).mean().reset_index().rename(columns={'V avg [V]':'Vavg [V]','S [VA]':'Savg [kVA]'})
+    df_avg['Vavg [pu]'] = df_avg['Vavg [V]']/Vbase
+    df_avg['Savg [kVA]'] = df_avg['Savg [kVA]']/1000
+
     df_min = df[['Van [V]', 'Vbn [V]', 'Vcn [V]','S [VA]','dia','hora']].groupby(['dia','hora']).min().reset_index().rename(columns={'Van [V]':'Van_min [pu]', 'Vbn [V]':'Vbn_min [pu]', 'Vcn [V]':'Vcn_min [pu]','S [VA]':'S_min [kVA]'})
     df_min[['Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]']] = df_min[['Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]']]/Vbase
-    df_min['S_min [kVA]'] = df_min['S_min [kVA]']/1000
+    #df_min['S_min [kVA]'] = df_min['S_min [kVA]']/1000
 
-    df_final = pd.merge(df_max,df_min, on=['dia','hora'],how='inner')
+    df_final = pd.merge(df_max,df_avg[['dia','hora','Vavg [pu]']], on=['dia','hora'],how='inner')
+    df_final = pd.merge(df_final,df_min, on=['dia','hora'],how='inner')
     df_final['Carregamento'] = df_final['S_max [kVA]']/Sn
 
     return df_final
@@ -105,7 +110,6 @@ def grafico_tensao_min(df_final,dia):
     fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
                         font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
                         xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h"))
-
     return fig
 
 def grafico_tensao_min_completo(df_final):
@@ -121,7 +125,36 @@ def grafico_tensao_min_completo(df_final):
                         xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h"))
     return fig
 
+def grafico_tensao_avg(df_final,dia):
+    aux = df_final[df_final['dia']==dia]
+    fig = px.line(aux,x='hora', y=['Vavg [pu]'])
+    fig.update_xaxes(dtick=d_tick,showgrid=True)
+    fig.update_layout(title='<b>Tensão Média no dia {} - {}<b>'.format(dia,trafo),xaxis_title='Hora do dia', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20))    
+    fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
+                        font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h"))
+    return fig
 
+def grafico_tensao_avg_completo(df_final):
+    aux2 = df_final.copy()
+    aux2['dia'] = aux2['dia'].apply(lambda x: str(x))
+    aux2['hora'] = aux2['hora'].apply(lambda x: str(x))
+    aux2['dia_hora'] = aux2['dia'] + '_' + aux2['hora']+'h'
+    fig = px.line(aux2,x='dia_hora', y=['Vavg [pu]'])
+    fig.update_xaxes(dtick=d_tick+2,showgrid=True)
+    fig.update_layout(title='<b>Tensão Média - {}<b>'.format(trafo),xaxis_title='Dia_hora', yaxis_title='Tensão [pu]',legend_title='',font=dict(size=20))    
+    fig.update_layout(title=dict(font = dict(size=axis_font_size+2)), legend_title = dict(font = dict(size=legend_font_size+2)), 
+                        font=dict(size=18), xaxis = dict( tickfont = dict(size=tick_font_size)), yaxis = dict( tickfont = dict(size=tick_font_size)), 
+                        xaxis_title= dict( font = dict(size=axis_font_size)), yaxis_title= dict( font = dict(size=axis_font_size)),legend = dict(font = dict(size=legend_font_size),x=0.3,y=0.1,orientation="h"))
+    return fig
+
+def colour_numbers(series):
+    red    = 'background-color: red;'
+    yellow = 'background-color: yellow;'     
+    default = ''
+
+    # note multiple else ..if conditions
+    return [red if e >= 231 else yellow if e <= 202.4 else default for e in series]  
 
 if __name__ == '__main__':
     folder_path = "datasets/"
@@ -149,19 +182,21 @@ if __name__ == '__main__':
     if selected=='Visualização dos dados':
         st.markdown('## Resumo')  
         c1, c2 = st.columns([1,1])
-        resumo = df[['Van [V]', 'Vbn [V]', 'Vcn [V]','S [VA]','Registro']].agg([min, max]).T  
+        resumo = df[['Van [V]', 'Vbn [V]', 'Vcn [V]','Registro']].agg([min, max]).T  
         c1.markdown('### Medições')      
-        c1.dataframe(resumo, width=350)      
+        c1.dataframe(resumo.iloc[0:3,:].style.apply(colour_numbers, axis=0, subset=['min','max']), width=350)    
+        c1.markdown('Primeira registro: {}'.format(resumo.loc['Registro','min']))  
+        c1.markdown('Último registro: {}'.format(resumo.loc['Registro','max'])) 
         c2.markdown('### Geração Distribuída')  
         res_gd = df_gd.loc[df_gd['cod_trafo'].isin(['5700047122', '5700154122', '5700182122', '5703368122', '5703992122',
-                                                    '5704615122', '5707288122'])].sort_values('POT_INST_GD',ascending=False).reset_index()
+                                                    '5704615122', '5707288122'])].sort_values('POT_INST_GD',ascending=False).reset_index(drop=True)
         c2.dataframe(res_gd, width=600)    
 
         st.markdown('## Dados:')
         st.markdown('Clique no nome coluna para ordenar')
-        st.dataframe(df_final.style.highlight_min(color = 'yellow', subset=['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]',
+        st.dataframe(df_final.style.highlight_min(color = 'yellow', subset=['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]','Vavg [pu]',
        'S_max [kVA]', 'Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]','S_min [kVA]', 'Carregamento']).highlight_max(color = 'red', subset=['Van_max [pu]', 'Vbn_max [pu]', 'Vcn_max [pu]',
-       'S_max [kVA]', 'Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]','S_min [kVA]', 'Carregamento']),height=500)
+       'Vavg [pu]','S_max [kVA]', 'Van_min [pu]', 'Vbn_min [pu]', 'Vcn_min [pu]','S_min [kVA]', 'Carregamento']),height=500)
     
     if selected=='Gráficos':
         st.markdown('## Gráficos 24h')
@@ -177,6 +212,8 @@ if __name__ == '__main__':
         st.plotly_chart(fig_v1, use_container_width=True)
         fig_v2 = grafico_tensao_min(df_final,dia)
         st.plotly_chart(fig_v2, use_container_width=True)
+        fig_v3 = grafico_tensao_avg(df_final,dia)
+        st.plotly_chart(fig_v3, use_container_width=True)
 
         completo = st.checkbox('Visualizar gráficos completos', value=True)
         if completo:
@@ -186,4 +223,6 @@ if __name__ == '__main__':
             st.plotly_chart(fig_v1, use_container_width=True)
             fig_v2 = grafico_tensao_min_completo(df_final)
             st.plotly_chart(fig_v2, use_container_width=True)
+            fig_v3 = grafico_tensao_avg_completo(df_final)
+            st.plotly_chart(fig_v3, use_container_width=True)
 
